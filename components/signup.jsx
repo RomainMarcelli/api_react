@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, Button, ActivityIndicator, Image, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import tw from 'twrnc';
 
@@ -12,21 +12,18 @@ const SignUp = ({ onStartGame }) => {
 
   const fetchCategories = async () => {
     try {
-      console.log(2)
       const response = await fetch('https://opentdb.com/api_category.php');
-      console.log(3)
-      const data = await response.json(); console.log(data)
-      setCategories(data.trivia_categories || []); // Assurez-vous que les données sont définies
+      const data = await response.json();
+      setCategories(data.trivia_categories || []);
       setLoading(false);
     } catch (error) {
-      console.error(error);
-      setLoading(false);
-      Alert.alert('Erreur', "Impossible de charger les catégories. Veuillez réessayer.");
+      console.error("Erreur lors de la récupération des catégories:", error);
+      Alert.alert("Erreur", "Impossible de charger les catégories. Veuillez réessayer.");
     }
   };
 
   useEffect(() => {
-    console.log(1); fetchCategories(); // Charger les catégories lors du montage
+    fetchCategories();
   }, []);
 
   const difficulties = [
@@ -36,17 +33,20 @@ const SignUp = ({ onStartGame }) => {
     { label: 'Difficile', value: 'hard' },
   ];
 
-  const isFormComplete = name && difficulty && category; // Condition pour le bouton
+  const isFormComplete = name && difficulty && category;
 
   return (
-<View style={tw`flex-1 justify-center items-center bg-gray-100 px-5`}>
-      
-      <Text style={tw`text-4xl font-bold uppercase text-blue-600 mb-7`}>Quizzenture</Text>
-      
-      
-      <Text style={tw`text-2xl text-gray-800 mb-4`}>Inscription</Text>
+    <View style={tw`flex-1 justify-center items-center bg-gray-100 px-5`}>
+      {/* Ajouter une image au-dessus du titre */}
+      <Image
+        source={require('../img/logo.png')} // Changez avec votre image
+        style={tw`w-3/4 h-40 rounded-full mb-7`} // Style de l'image
+      />
 
+      {/* <Text style={tw`text-4xl font-bold uppercase text-blue-600 mb-7`}>Quizzenture</Text> */}
       
+      <Text style={tw`text-2xl text-blue-600 mb-4 uppercase`}>Inscription</Text>
+
       <TextInput
         style={tw`h-10 border border-gray-400 w-3/4 px-3 rounded-lg mb-4`}
         placeholder="Entrez votre prénom"
@@ -54,7 +54,6 @@ const SignUp = ({ onStartGame }) => {
         value={name}
       />
 
-      
       <Picker
         selectedValue={difficulty}
         style={tw`w-3/4 mb-4 bg-white rounded-lg`}
@@ -79,13 +78,13 @@ const SignUp = ({ onStartGame }) => {
         </Picker>
       )}
 
-      {/* {isFormComplete && ( */}
+      {isFormComplete && (
         <Button
           title="Commencer la partie"
           onPress={() => onStartGame({ name, difficulty, category })} 
-          color="#1e90ff" // Couleur personnalisée
+          color="#1e90ff"
         />
-      {/* )} */}
+      )}
     </View>
   );
 };
